@@ -1,12 +1,17 @@
-print("Xin chào ThingsBoard")
+print("Hello ThingsBoard")
 import paho.mqtt.client as mqttclient
 import time
 import json
+import  random
+from geopy.geocoders import Nominatim
+import  requests
+
+#access_token: PThWLRpoIJfOUifjOZ9y
+#device_id: 0f03f780-7814-11ec-91d1-9b16bfb7b504
 
 BROKER_ADDRESS = "demo.thingsboard.io"
 PORT = 1883
-THINGS_BOARD_ACCESS_TOKEN = ""
-
+THINGS_BOARD_ACCESS_TOKEN = "PThWLRpoIJfOUifjOZ9y"
 
 def subscribed(client, userdata, mid, granted_qos):
     print("Subscribed...")
@@ -42,14 +47,55 @@ client.loop_start()
 client.on_subscribe = subscribed
 client.on_message = recv_message
 
-temp = 30
-humi = 50
-light_intesity = 100
+#Some temperature configure
+MAX_TEMP = 40
+MIN_TEMP = -20
+MAX_TEMP_STEP = 3
+
+MAX_HUMI = 60
+MIN_HUMI = 5
+MAX_HUMI_STEP = 2
+
+temp = random.randint(MIN_TEMP, MAX_TEMP)
+humi = random.randint(MIN_HUMI, MAX_HUMI)
+#light_intesity = random.randint(40, 120)
+
+longitude = 106.6297
+latitude = 10.8231
+
+MIN_LONGTITUDE = -180
+MAX_LONGTITUDE = 180
+MIN_LATITUDE = -90
+MAX_LATITUDE = 90
+
+def updatePosition(max_longtitude_step, max_latitude_step):
+    global longitude
+    global latitude
+    longitude += random.uniform(-max_longtitude_step, max_longtitude_step)
+    latitude += random.uniform(-max_latitude_step, max_latitude_step)
+
+
 counter = 0
 while True:
-    collect_data = {'temperature': temp, 'humidity': humi, 'light':light_intesity}
-    temp += 1
-    humi += 1
-    light_intesity += 1
+    collect_data = {'temperature': temp, 'humidity': humi, 'longitude': longitude, 'latitude': latitude}
+
+    #for temperature
+    temp += random.randrange(-MAX_TEMP_STEP, MAX_TEMP_STEP, 1)
+    if temp > MAX_TEMP:
+        temp = MAX_TEMP
+    elif temp < MIN_TEMP:
+        temp = MIN_TEMP
+
+    #for humid
+    humi += random.randrange(-MAX_HUMI_STEP, MAX_TEMP_STEP, 1)
+    if humi > MAX_HUMI:
+        humi = MAX_HUMI
+    elif humi < MIN_HUMI:
+        humi = MIN_HUMI
+
+    #For position
+    updatePosition(0.00001, 0.00001)
+    print(latitude, ' ' ,longitude)
+
     client.publish('v1/devices/me/telemetry', json.dumps(collect_data), 1)
-    time.sleep(5)
+    time.sleep(10)
