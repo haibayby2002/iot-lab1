@@ -3,8 +3,7 @@ import paho.mqtt.client as mqttclient
 import time
 import json
 import  random
-from geopy.geocoders import Nominatim
-import  requests
+
 
 #access_token: PThWLRpoIJfOUifjOZ9y
 #device_id: 0f03f780-7814-11ec-91d1-9b16bfb7b504
@@ -71,9 +70,20 @@ MAX_LATITUDE = 90
 def updatePosition(max_longtitude_step, max_latitude_step):
     global longitude
     global latitude
-    longitude += random.uniform(-max_longtitude_step, max_longtitude_step)
-    latitude += random.uniform(-max_latitude_step, max_latitude_step)
 
+    # Boundary limit
+    longitude += random.uniform(-max_longtitude_step, max_longtitude_step)  #update longtitude
+    if longitude > MAX_LONGTITUDE:
+        longitude = MAX_LONGTITUDE
+    elif longitude < MIN_LONGTITUDE:
+        longitude = MIN_LONGTITUDE
+
+    latitude += random.uniform(-max_latitude_step, max_latitude_step)   #update latitude
+    #Boundary limit
+    if latitude > MAX_LATITUDE:
+        latitude = MAX_LATITUDE
+    elif latitude < MIN_LATITUDE:
+        latitude = MIN_LATITUDE
 
 counter = 0
 while True:
@@ -95,7 +105,7 @@ while True:
 
     #For position
     updatePosition(0.00001, 0.00001)
-    print(latitude, ' ' ,longitude)
+    print('(', latitude, ' ' , longitude, ')')
 
     client.publish('v1/devices/me/telemetry', json.dumps(collect_data), 1)
     time.sleep(10)
