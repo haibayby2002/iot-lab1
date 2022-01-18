@@ -104,7 +104,7 @@ while True:
         humi = MIN_HUMI
 
     #For position
-    updatePosition(0.00001, 0.00001)
+    updatePosition(0.0001, 0.0001)
     print('(', latitude, ' ' , longitude, ')')
 
     client.publish('v1/devices/me/telemetry', json.dumps(collect_data), 1)
