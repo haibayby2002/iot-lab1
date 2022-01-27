@@ -3,6 +3,8 @@ import paho.mqtt.client as mqttclient
 import time
 import json
 import  random
+import geocoder
+
 
 
 #access_token: PThWLRpoIJfOUifjOZ9y
@@ -59,8 +61,11 @@ temp = random.randint(MIN_TEMP, MAX_TEMP)
 humi = random.randint(MIN_HUMI, MAX_HUMI)
 #light_intesity = random.randint(40, 120)
 
-longitude = 106.6297
-latitude = 10.8231
+g = geocoder.ip('me')
+# print(g.latlng[0])
+# print(g.latlng[1])
+longitude = g.latlng[1]
+latitude = g.latlng[0]
 
 MIN_LONGTITUDE = -180
 MAX_LONGTITUDE = 180
